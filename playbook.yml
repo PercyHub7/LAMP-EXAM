@@ -1,0 +1,27 @@
+---
+- name: DEPLOYING LARAVEL APP & CRON TASK INTO SLAVE (192.168.33.12)
+  hosts: 192.168.33.12
+  become: yes
+
+  tasks:
+   - name: Forwarding the script to 192.168.33.12
+     copy:
+      src: /home/vagrant/app.sh
+      dest: /home/vagrant/
+      mode: 0755
+
+   - name: Executing the bash script file on 192.168.33.12
+     command: /home/vagrant/app.sh
+
+   - name: file created to store servertime logs
+     file:
+      path: /home/vagrant/servertime.log
+      state: touch
+
+   - name: Cron job task to validate uptime
+     cron:
+      name: Server Uptime
+      minute: "0"
+      hour: "0"
+      job: uptime >> /home/vagrant/servertime.log
+
